@@ -99,7 +99,38 @@ router.get("/",(req,res,next)=>{
 
       })
 
+      router.post("/", [check("name").exists().withMessage("name is a mandatory field"),
+check("description").exists().withMessage("Needs a description"),
+check("repoUrl").exists().isURL().withMessage("has to be a valid repoUrl"),
+check("liveUrl").exists().isURL().withMessage("has to be a valid Live URL"), ], (req, res) => {
+  try{
 
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()){
+      const err = new Error()
+      err.httpStatusCode = 400
+      err.message = errors
+      next(err)
+    }else {
+
+    const projectDB = readFile("projects.json")
+    const newproject = {
+      ...req.body,
+      ID: uniqid(),
+      modifiedAt: new Date(),
+    }
+  
+    projectDB.push(newproject)
+  
+    fs.writeFileSync(path.join(__dirname, "projects.json"), JSON.stringify(projectDB))
+  
+    res.status(201).send({ id: newproject.ID })
+}
+  }catch(error){
+    next(error)
+  }
+})
 
 module.exports=router
 
