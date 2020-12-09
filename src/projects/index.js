@@ -45,7 +45,7 @@ router.get("/",(req,res,next)=>{
     if (req.query && req.query.name) {
         const filterprojects = projectsContent.filter(
           proj =>
-            proj.hasOwnProperty("title") &&
+            proj.hasOwnProperty("name") &&
             proj.name.toLowerCase() === req.query.name.toLowerCase()
         )
         res.send(filterprojects)
